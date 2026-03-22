@@ -1,0 +1,207 @@
+module hb2_interp_stage #(
+    parameter integer IN_W  = 14,
+    parameter integer OUT_W = 16
+)(
+    input  wire                     clk,        // stage output-rate clock = 2x stage input-rate
+    input  wire                     rst_n,
+    input  wire                     din_valid,  // asserted on real input sample cycles of this stage
+    input  wire signed [IN_W-1:0]   din,
+    output reg  signed [OUT_W-1:0]  dout,
+    output reg                      dout_valid
+);
+
+    integer i;
+    reg phase;  // 0: even-phase output, 1: odd-phase output
+
+    // -----------------------------
+    // Width planning inside 1 stage
+    // -----------------------------
+    localparam integer PRE_W  = IN_W + 1;   // pre-adder width
+    localparam integer TERM_W = IN_W + 10;  // CSD term width
+    localparam integer ACC_W  = IN_W + 13;  // final accumulator width
+
+    // -----------------------------
+    // Delay line: 12 side taps
+    // d[0] newest, d[11] oldest
+    // -----------------------------
+    reg signed [IN_W-1:0] d [0:11];
+
+    // Virtual taps used for EVEN phase
+    wire signed [IN_W-1:0] t0;
+    wire signed [IN_W-1:0] t1;
+    wire signed [IN_W-1:0] t2;
+    wire signed [IN_W-1:0] t3;
+    wire signed [IN_W-1:0] t4;
+    wire signed [IN_W-1:0] t5;
+    wire signed [IN_W-1:0] t6;
+    wire signed [IN_W-1:0] t7;
+    wire signed [IN_W-1:0] t8;
+    wire signed [IN_W-1:0] t9;
+    wire signed [IN_W-1:0] t10;
+    wire signed [IN_W-1:0] t11;
+
+    // Symmetric pre-adders
+    wire signed [PRE_W-1:0] s6;
+    wire signed [PRE_W-1:0] s5;
+    wire signed [PRE_W-1:0] s4;
+    wire signed [PRE_W-1:0] s3;
+    wire signed [PRE_W-1:0] s2;
+    wire signed [PRE_W-1:0] s1;
+
+    // Extended pre-adder outputs
+    wire signed [TERM_W-1:0] s6e;
+    wire signed [TERM_W-1:0] s5e;
+    wire signed [TERM_W-1:0] s4e;
+    wire signed [TERM_W-1:0] s3e;
+    wire signed [TERM_W-1:0] s2e;
+    wire signed [TERM_W-1:0] s1e;
+
+    // CSD products
+    wire signed [TERM_W-1:0] p1;
+    wire signed [TERM_W-1:0] p2;
+    wire signed [TERM_W-1:0] p3;
+    wire signed [TERM_W-1:0] p4;
+    wire signed [TERM_W-1:0] p5;
+    wire signed [TERM_W-1:0] p6;
+
+    wire signed [ACC_W-1:0] even_sum_raw;
+    wire signed [ACC_W-1:0] odd_sum_raw;
+
+    // ------------------------------------------------------------
+    // Saturation function: wide signed -> narrow signed
+    // ------------------------------------------------------------
+    function [OUT_W-1:0] sat_signed;
+        input signed [ACC_W-1:0] x;
+        reg pos_ov;
+        reg neg_ov;
+        begin
+            pos_ov = (~x[ACC_W-1]) & (|x[ACC_W-2:OUT_W-1]);
+            neg_ov = ( x[ACC_W-1]) & (~&x[ACC_W-2:OUT_W-1]);
+
+            if (pos_ov)
+                sat_signed = {1'b0, {(OUT_W-1){1'b1}}};
+            else if (neg_ov)
+                sat_signed = {1'b1, {(OUT_W-1){1'b0}}};
+            else
+                sat_signed = x[OUT_W-1:0];
+        end
+    endfunction
+
+    // ------------------------------------------------------------
+    // phase toggle
+    // ------------------------------------------------------------
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
+            phase <= 1'b0;
+        else
+            phase <= ~phase;
+    end
+
+    // ------------------------------------------------------------
+    // delay line update only on real input cycles
+    // ------------------------------------------------------------
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            for (i = 0; i < 12; i = i + 1)
+                d[i] <= {IN_W{1'b0}};
+        end else if ((phase == 1'b0) && din_valid) begin
+            d[0] <= din;
+            for (i = 1; i < 12; i = i + 1)
+                d[i] <= d[i-1];
+        end
+    end
+
+    // ------------------------------------------------------------
+    // virtual shifted taps for EVEN phase computation
+    // current input sample must be visible immediately in y[2n]
+    // ------------------------------------------------------------
+    assign t0  = ((phase == 1'b0) && din_valid) ? din   : d[0];
+    assign t1  = ((phase == 1'b0) && din_valid) ? d[0]  : d[1];
+    assign t2  = ((phase == 1'b0) && din_valid) ? d[1]  : d[2];
+    assign t3  = ((phase == 1'b0) && din_valid) ? d[2]  : d[3];
+    assign t4  = ((phase == 1'b0) && din_valid) ? d[3]  : d[4];
+    assign t5  = ((phase == 1'b0) && din_valid) ? d[4]  : d[5];
+    assign t6  = ((phase == 1'b0) && din_valid) ? d[5]  : d[6];
+    assign t7  = ((phase == 1'b0) && din_valid) ? d[6]  : d[7];
+    assign t8  = ((phase == 1'b0) && din_valid) ? d[7]  : d[8];
+    assign t9  = ((phase == 1'b0) && din_valid) ? d[8]  : d[9];
+    assign t10 = ((phase == 1'b0) && din_valid) ? d[9]  : d[10];
+    assign t11 = ((phase == 1'b0) && din_valid) ? d[10] : d[11];
+
+    // ------------------------------------------------------------
+    // symmetric pre-adders for EVEN phase
+    // ------------------------------------------------------------
+    assign s6 = $signed({t0 [IN_W-1], t0 }) + $signed({t11[IN_W-1], t11});
+    assign s5 = $signed({t1 [IN_W-1], t1 }) + $signed({t10[IN_W-1], t10});
+    assign s4 = $signed({t2 [IN_W-1], t2 }) + $signed({t9 [IN_W-1], t9 });
+    assign s3 = $signed({t3 [IN_W-1], t3 }) + $signed({t8 [IN_W-1], t8 });
+    assign s2 = $signed({t4 [IN_W-1], t4 }) + $signed({t7 [IN_W-1], t7 });
+    assign s1 = $signed({t5 [IN_W-1], t5 }) + $signed({t6 [IN_W-1], t6 });
+
+    assign s6e = {{(TERM_W-PRE_W){s6[PRE_W-1]}}, s6};
+    assign s5e = {{(TERM_W-PRE_W){s5[PRE_W-1]}}, s5};
+    assign s4e = {{(TERM_W-PRE_W){s4[PRE_W-1]}}, s4};
+    assign s3e = {{(TERM_W-PRE_W){s3[PRE_W-1]}}, s3};
+    assign s2e = {{(TERM_W-PRE_W){s2[PRE_W-1]}}, s2};
+    assign s1e = {{(TERM_W-PRE_W){s1[PRE_W-1]}}, s1};
+
+    // ------------------------------------------------------------
+    // CSD constant multipliers
+    // NOTE:
+    // C1 is modified from the original code to reduce DC gain error.
+    // Original C1 = 2^-2 + 2^-4 + 2^-9  = 0.314453125
+    // New      C1 = 2^-2 + 2^-4 - 2^-8  = 0.30859375
+    // This brings the even-branch DC gain much closer to 1.0.
+    // ------------------------------------------------------------
+
+    // C1 ~= 0.30859375
+    assign p1 = (s1e >>> 2) + (s1e >>> 4) - (s1e >>> 8);
+
+    // C2 ~= 0.095703125
+    assign p2 = (s2e >>> 3) - (s2e >>> 5) + (s2e >>> 9);
+
+    // C3 ~= 0.048828125
+    assign p3 = (s3e >>> 4) - (s3e >>> 6) + (s3e >>> 9);
+
+    // C4 ~= 0.0263671875
+    assign p4 = (s4e >>> 5) - (s4e >>> 8) - (s4e >>> 10);
+
+    // C5 ~= 0.01361083984375
+    assign p5 = (s5e >>> 6) - (s5e >>> 9) - (s5e >>> 14);
+
+    // C6 ~= 0.0072021484375
+    assign p6 = (s6e >>> 7) - (s6e >>> 11) - (s6e >>> 13);
+
+    assign even_sum_raw =
+        $signed({{(ACC_W-TERM_W){p1[TERM_W-1]}}, p1}) +
+        $signed({{(ACC_W-TERM_W){p2[TERM_W-1]}}, p2}) +
+        $signed({{(ACC_W-TERM_W){p3[TERM_W-1]}}, p3}) +
+        $signed({{(ACC_W-TERM_W){p4[TERM_W-1]}}, p4}) +
+        $signed({{(ACC_W-TERM_W){p5[TERM_W-1]}}, p5}) +
+        $signed({{(ACC_W-TERM_W){p6[TERM_W-1]}}, p6});
+
+    // ------------------------------------------------------------
+    // ODD phase: center tap only
+    // For a 2x interpolation HB stage, this should be ~1.0*x_center,
+    // not 0.5*x_center.
+    // ------------------------------------------------------------
+    assign odd_sum_raw = {{(ACC_W-IN_W){d[5][IN_W-1]}}, d[5]};
+
+    // ------------------------------------------------------------
+    // output register
+    // ------------------------------------------------------------
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            dout       <= {OUT_W{1'b0}};
+            dout_valid <= 1'b0;
+        end else begin
+            dout_valid <= 1'b1;
+
+            if (phase == 1'b1)
+                dout <= sat_signed(odd_sum_raw);
+            else
+                dout <= sat_signed(even_sum_raw);
+        end
+    end
+
+endmodule
