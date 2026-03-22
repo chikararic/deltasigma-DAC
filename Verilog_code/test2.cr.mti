@@ -1,0 +1,15 @@
+D:/Verilog_code/JKcode_tst.v {1 {vlog -work work1 -stats=none D:/Verilog_code/JKcode_tst.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_JKcodetest
+
+Top level modules:
+	tb_JKcodetest
+
+} {} {}} D:/Verilog_code/JKcode.v {1 {vlog -work work1 -stats=none D:/Verilog_code/JKcode.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module JKcode
+
+Top level modules:
+	JKcode
+
+} {} {}}

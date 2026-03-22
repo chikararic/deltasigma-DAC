@@ -1,0 +1,59 @@
+m255
+K4
+z2
+!s11f vlog 2020.1 2020.02, Feb 28 2020
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+dD:/intelFPGA/20.1
+vJKcode
+Z0 !s110 1771914166
+!i10b 1
+!s100 IPMDMYm4XMAoMTXF`k:=L2
+Z1 !s11b Dg1SIo80bB@j0V0VzS_@n1
+I6;0JhJC4L3`UMf3FFe[4o1
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+Z3 dD:/Verilog_code
+w1771682989
+8D:/Verilog_code/JKcode.v
+FD:/Verilog_code/JKcode.v
+!i122 7
+L0 1 22
+Z4 OV;L;2020.1;71
+r1
+!s85 0
+31
+Z5 !s108 1771914166.000000
+!s107 D:/Verilog_code/JKcode.v|
+!s90 -reportprogress|300|-work|work1|-stats=none|D:/Verilog_code/JKcode.v|
+!i113 1
+Z6 o-work work1
+Z7 tCvgOpt 0
+n@j@kcode
+vtb_JKcodetest
+R0
+!i10b 1
+!s100 f0B<eK08lgU1<B44EFfoM3
+R1
+ID198:4ZZfbo>4TCJ0ieQB2
+R2
+R3
+w1771683039
+8D:/Verilog_code/JKcode_tst.v
+FD:/Verilog_code/JKcode_tst.v
+!i122 8
+L0 1 36
+R4
+r1
+!s85 0
+31
+R5
+!s107 D:/Verilog_code/JKcode_tst.v|
+!s90 -reportprogress|300|-work|work1|-stats=none|D:/Verilog_code/JKcode_tst.v|
+!i113 1
+R6
+R7
+ntb_@j@kcodetest

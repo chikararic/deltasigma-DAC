@@ -1,0 +1,71 @@
+D:/Verilog_code/mash_acc_ce.v {1 {vlog -work work -stats=none D:/Verilog_code/mash_acc_ce.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module mash_acc_ce
+
+Top level modules:
+	mash_acc_ce
+
+} {} {}} D:/Verilog_code/mash111_top.v {1 {vlog -work work -stats=none D:/Verilog_code/mash111_top.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module mash111_top
+
+Top level modules:
+	mash111_top
+
+} {} {}} D:/Verilog_code/tb_diff2_1b.v {1 {vlog -work work -stats=none D:/Verilog_code/tb_diff2_1b.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_diff2_1b
+
+Top level modules:
+	tb_diff2_1b
+
+} {} {}} D:/Verilog_code/tb_mash111_top.v {1 {vlog -work work -stats=none D:/Verilog_code/tb_mash111_top.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_mash111_top
+
+Top level modules:
+	tb_mash111_top
+
+} {} {}} D:/Verilog_code/tb_mash_acc_ce.v {1 {vlog -work work -stats=none D:/Verilog_code/tb_mash_acc_ce.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_mash_acc_ce
+
+Top level modules:
+	tb_mash_acc_ce
+
+} {} {}} D:/Verilog_code/delay_1.v {1 {vlog -work work -stats=none D:/Verilog_code/delay_1.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module delay_1
+
+Top level modules:
+	delay_1
+
+} {} {}} D:/Verilog_code/diff1_1b.v {1 {vlog -work work -stats=none D:/Verilog_code/diff1_1b.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module diff1_1b
+
+Top level modules:
+	diff1_1b
+
+} {} {}} D:/Verilog_code/tb_delay_1.v {1 {vlog -work work -stats=none D:/Verilog_code/tb_delay_1.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_delay_1
+
+Top level modules:
+	tb_delay_1
+
+} {} {}} D:/Verilog_code/diff2_1b.v {1 {vlog -work work -stats=none D:/Verilog_code/diff2_1b.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module diff2_1b
+
+Top level modules:
+	diff2_1b
+
+} {} {}} D:/Verilog_code/tb_diff1_1b.v {1 {vlog -work work -stats=none D:/Verilog_code/tb_diff1_1b.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_diff1_1b
+
+Top level modules:
+	tb_diff1_1b
+
+} {} {}}

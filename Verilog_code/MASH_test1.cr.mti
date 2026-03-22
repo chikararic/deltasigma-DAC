@@ -1,0 +1,71 @@
+D:/Verilog_code/mash_acc_ce.v {1 {vlog -work work -stats=none D:/Verilog_code/mash_acc_ce.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module mash_acc_ce
+
+Top level modules:
+	mash_acc_ce
+
+} {} {}} D:/Verilog_code/tb_bit_delay_1.v {1 {vlog -work work -stats=none D:/Verilog_code/tb_bit_delay_1.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_bit_delay_1
+
+Top level modules:
+	tb_bit_delay_1
+
+} {} {}} D:/Verilog_code/diff2_1b_opt.v {1 {vlog -work work -stats=none D:/Verilog_code/diff2_1b_opt.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module diff2_1b_opt
+
+Top level modules:
+	diff2_1b_opt
+
+} {} {}} D:/Verilog_code/tb_mash_acc_ce.v {1 {vlog -work work -stats=none D:/Verilog_code/tb_mash_acc_ce.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_mash_acc_ce
+
+Top level modules:
+	tb_mash_acc_ce
+
+} {} {}} D:/Verilog_code/ncn_mash111_opt.v {1 {vlog -work work -stats=none D:/Verilog_code/ncn_mash111_opt.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module ncn_mash111_opt
+
+Top level modules:
+	ncn_mash111_opt
+
+} {} {}} D:/Verilog_code/tb_diff2_1b_opt.v {1 {vlog -work work -stats=none D:/Verilog_code/tb_diff2_1b_opt.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_diff2_1b_opt
+
+Top level modules:
+	tb_diff2_1b_opt
+
+} {} {}} D:/Verilog_code/diff1_1b.v {1 {vlog -work work -stats=none D:/Verilog_code/diff1_1b.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module diff1_1b
+
+Top level modules:
+	diff1_1b
+
+} {} {}} D:/Verilog_code/tb_ncn_mash111_opt.v {1 {vlog -work work -stats=none D:/Verilog_code/tb_ncn_mash111_opt.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_ncn_mash111_opt
+
+Top level modules:
+	tb_ncn_mash111_opt
+
+} {} {}} D:/Verilog_code/bit_delay_1.v {1 {vlog -work work -stats=none D:/Verilog_code/bit_delay_1.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module bit_delay_1
+
+Top level modules:
+	bit_delay_1
+
+} {} {}} D:/Verilog_code/tb_diff1_1b.v {1 {vlog -work work -stats=none D:/Verilog_code/tb_diff1_1b.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_diff1_1b
+
+Top level modules:
+	tb_diff1_1b
+
+} {} {}}

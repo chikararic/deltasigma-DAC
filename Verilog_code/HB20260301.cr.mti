@@ -1,0 +1,36 @@
+D:/Verilog_code/tb_prototype_stress.v {1 {vlog -work work -stats=none D:/Verilog_code/tb_prototype_stress.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_prototype_stress
+
+Top level modules:
+	tb_prototype_stress
+
+} {} {}} D:/Verilog_code/tb_prototype_func.v {1 {vlog -work work -stats=none D:/Verilog_code/tb_prototype_func.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_prototype_func
+
+Top level modules:
+	tb_prototype_func
+
+} {} {}} D:/Verilog_code/prototype.v {1 {vlog -work work -stats=none {D:\Verilog_code\prototype.v}
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module prototype
+
+Top level modules:
+	prototype
+
+} {} {}} D:/Verilog_code/tb_prototype.v {1 {vlog -work work -stats=none {D:\Verilog_code\tb_prototype.v}
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_prototype
+
+Top level modules:
+	tb_prototype
+
+} {} {}} D:/Verilog_code/tb_prototype_protocol.v {1 {vlog -work work -stats=none D:/Verilog_code/tb_prototype_protocol.v
+Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+-- Compiling module tb_prototype_protocol
+
+Top level modules:
+	tb_prototype_protocol
+
+} {} {}}

@@ -1,0 +1,36 @@
+module tb_JKcodetest;
+  reg clk;
+  reg rst;
+  reg j;
+  reg k;
+  wire q;
+
+  JKcode uut (
+    .q(q),
+    .j(j),
+    .k(k),
+    .clk(clk),
+    .rst(rst)
+  );
+
+  always #5 clk = ~clk;
+
+  initial begin
+    clk = 0;
+    rst = 0;  // ???????????
+    j   = 0;
+    k   = 0;
+
+    repeat(2) @(posedge clk);
+    rst = 1;  // ????
+
+    @(negedge clk); j=0; k=0;
+    @(negedge clk); j=0; k=1;
+    @(negedge clk); j=1; k=0;
+    @(negedge clk); j=1; k=1;
+    @(negedge clk); j=0; k=0;
+
+    repeat(2) @(posedge clk);
+    $stop;
+  end
+endmodule

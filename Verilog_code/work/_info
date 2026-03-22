@@ -1,0 +1,561 @@
+m255
+K4
+z2
+!s11f vlog 2020.1 2020.02, Feb 28 2020
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+dD:/课程书目/论文相关/code
+vbit_delay_1
+Z0 !s110 1773498075
+!i10b 1
+!s100 k=e7PTAMkZ0Q?_S]ndN8z3
+Z1 !s11b Dg1SIo80bB@j0V0VzS_@n1
+IUOe177bDz:3a3THb@BbdD2
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+Z3 dD:/Verilog_code
+w1773424416
+8D:/Verilog_code/bit_delay_1.v
+FD:/Verilog_code/bit_delay_1.v
+!i122 15
+L0 3 16
+Z4 OV;L;2020.1;71
+r1
+!s85 0
+31
+Z5 !s108 1773498075.000000
+!s107 D:/Verilog_code/bit_delay_1.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/bit_delay_1.v|
+!i113 1
+Z6 o-work work
+Z7 tCvgOpt 0
+vdelay_1
+Z8 !s110 1773749078
+!i10b 1
+!s100 fV>_XKUU`@23I[3EFf`ag3
+R1
+I?^eE2;;D<UUZFb[_=TfdA0
+R2
+R3
+w1773732960
+8D:/Verilog_code/delay_1.v
+FD:/Verilog_code/delay_1.v
+!i122 105
+Z9 L0 1 18
+R4
+r1
+!s85 0
+31
+Z10 !s108 1773749078.000000
+!s107 D:/Verilog_code/delay_1.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/delay_1.v|
+!i113 1
+R6
+R7
+vdiff1_1b
+R8
+!i10b 1
+!s100 Pez]7I9=>QDDJm5Fj7;4Q3
+R1
+I1RC<0hznf9JIF5dN:gVWP0
+R2
+R3
+w1773732922
+8D:/Verilog_code/diff1_1b.v
+FD:/Verilog_code/diff1_1b.v
+!i122 106
+L0 1 15
+R4
+r1
+!s85 0
+31
+R10
+!s107 D:/Verilog_code/diff1_1b.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/diff1_1b.v|
+!i113 1
+R6
+R7
+vdiff2_1b
+R8
+!i10b 1
+!s100 JWaZ;f>Tf<Rmi48RZ4BM70
+R1
+ImQ;QlM;d6LPIY=[_Z<EhQ2
+R2
+R3
+w1773732945
+8D:/Verilog_code/diff2_1b.v
+FD:/Verilog_code/diff2_1b.v
+!i122 107
+R9
+R4
+r1
+!s85 0
+31
+R10
+!s107 D:/Verilog_code/diff2_1b.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/diff2_1b.v|
+!i113 1
+R6
+R7
+vdiff2_1b_opt
+R0
+!i10b 1
+!s100 <Y@HFZAN0BH=8RjQcG6S^3
+R1
+I=_d42D0WY]DITliYLk7013
+R2
+R3
+w1773490909
+8D:/Verilog_code/diff2_1b_opt.v
+FD:/Verilog_code/diff2_1b_opt.v
+!i122 19
+L0 3 22
+R4
+r1
+!s85 0
+31
+R5
+!s107 D:/Verilog_code/diff2_1b_opt.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/diff2_1b_opt.v|
+!i113 1
+R6
+R7
+vhb1_csd_fixed
+!s110 1773572718
+!i10b 1
+!s100 kClji@;eM[i26WWhTz1b30
+R1
+I70iXT4ViMgLKfYRDPWz_V3
+R2
+R3
+w1773572712
+Z11 8D:/Verilog_code/procotype.v
+Z12 FD:/Verilog_code/procotype.v
+!i122 24
+L0 3 130
+R4
+r1
+!s85 0
+31
+!s108 1773572718.000000
+Z13 !s107 D:/Verilog_code/procotype.v|
+Z14 !s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/procotype.v|
+!i113 1
+R6
+R7
+vhb1_interp2_lp
+!s110 1773574381
+!i10b 1
+!s100 h`FiKMK`2eK7ElC;WPk3P1
+R1
+I^e=d@^BkoO?=SDNf9MNi[1
+R2
+R3
+w1773574377
+R11
+R12
+!i122 26
+L0 3 121
+R4
+r1
+!s85 0
+31
+!s108 1773574381.000000
+R13
+R14
+!i113 1
+R6
+R7
+vmash111_top
+R8
+!i10b 1
+!s100 n4cOhT`U85gG]gK]>@zLL2
+R1
+I6n;D;9ml122LK7JESLo751
+R2
+R3
+w1773732987
+8D:/Verilog_code/mash111_top.v
+FD:/Verilog_code/mash111_top.v
+!i122 108
+L0 1 123
+R4
+r1
+!s85 0
+31
+R10
+!s107 D:/Verilog_code/mash111_top.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/mash111_top.v|
+!i113 1
+R6
+R7
+vmash_acc_ce
+R8
+!i10b 1
+!s100 ZhzU;KWhc`hnWA8ezTAIZ3
+R1
+IBfR2`mVd2NJd>bzM47;HN3
+R2
+R3
+w1773733118
+8D:/Verilog_code/mash_acc_ce.v
+FD:/Verilog_code/mash_acc_ce.v
+!i122 104
+L0 1 28
+R4
+r1
+!s85 0
+31
+R10
+!s107 D:/Verilog_code/mash_acc_ce.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/mash_acc_ce.v|
+!i113 1
+R6
+R7
+vncn_mash111_opt
+R0
+!i10b 1
+!s100 Fa;mTO4dl<1b[mKd1lcG;3
+R1
+I;C=jWzbJW3_;7`O0d6O2C2
+R2
+R3
+w1773490997
+8D:/Verilog_code/ncn_mash111_opt.v
+FD:/Verilog_code/ncn_mash111_opt.v
+!i122 21
+L0 3 18
+R4
+r1
+!s85 0
+31
+R5
+!s107 D:/Verilog_code/ncn_mash111_opt.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/ncn_mash111_opt.v|
+!i113 1
+R6
+R7
+vprocotype
+!s110 1774095974
+!i10b 1
+!s100 A80Wk0UFJ[BocUI18Rbc`1
+R1
+I]081[lFUg6dddH`AOXoWj0
+R2
+R3
+w1773762357
+R11
+R12
+!i122 129
+Z15 L0 1 160
+R4
+r1
+!s85 0
+31
+!s108 1774095974.000000
+R13
+R14
+!i113 1
+R6
+R7
+vprototype
+Z16 !s110 1774113091
+!i10b 1
+!s100 HmLVVIEh1_N`P?9Nk:OU:3
+R1
+IWm_KdeB[JC<bgbE5REK5^3
+R2
+R3
+w1774110368
+8prototype.v
+Fprototype.v
+!i122 140
+R15
+R4
+r1
+!s85 0
+31
+Z17 !s108 1774113091.000000
+!s107 tb_prototype.v|prototype.v|
+Z18 !s90 -reportprogress|300|prototype.v|tb_prototype.v|
+!i113 1
+R7
+vtb_bit_delay_1
+R0
+!i10b 1
+!s100 7@dZ1?76Vi[V5A630J8>m1
+R1
+IBb3md[boB8l0[^FJi`87o0
+R2
+R3
+w1773424439
+8D:/Verilog_code/tb_bit_delay_1.v
+FD:/Verilog_code/tb_bit_delay_1.v
+!i122 16
+L0 3 72
+R4
+r1
+!s85 0
+31
+R5
+!s107 D:/Verilog_code/tb_bit_delay_1.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/tb_bit_delay_1.v|
+!i113 1
+R6
+R7
+vtb_delay_1
+Z19 !s110 1773749079
+!i10b 1
+!s100 27I;GH1O?Q]aQkof4zn5U0
+R1
+I<kh@V6Tg]V6z;S>1;bYYM1
+R2
+R3
+w1773742437
+8D:/Verilog_code/tb_delay_1.v
+FD:/Verilog_code/tb_delay_1.v
+!i122 110
+L0 3 85
+R4
+r1
+!s85 0
+31
+Z20 !s108 1773749079.000000
+!s107 D:/Verilog_code/tb_delay_1.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/tb_delay_1.v|
+!i113 1
+R6
+R7
+vtb_diff1_1b
+R19
+!i10b 1
+!s100 k2Zn8FS8A6>IPVB:XX@lj2
+R1
+ID]49]4P<O8E7iCm:U9ZD:3
+R2
+R3
+w1773742492
+8D:/Verilog_code/tb_diff1_1b.v
+FD:/Verilog_code/tb_diff1_1b.v
+!i122 111
+L0 3 52
+R4
+r1
+!s85 0
+31
+R20
+!s107 D:/Verilog_code/tb_diff1_1b.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/tb_diff1_1b.v|
+!i113 1
+R6
+R7
+vtb_diff2_1b
+R19
+!i10b 1
+!s100 E0[_TVblD261EFfnTP]QV1
+R1
+I3zEK6[7SaNj[VSVz[>h1Y1
+R2
+R3
+w1773742528
+8D:/Verilog_code/tb_diff2_1b.v
+FD:/Verilog_code/tb_diff2_1b.v
+!i122 112
+Z21 L0 3 51
+R4
+r1
+!s85 0
+31
+R20
+!s107 D:/Verilog_code/tb_diff2_1b.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/tb_diff2_1b.v|
+!i113 1
+R6
+R7
+vtb_diff2_1b_opt
+R0
+!i10b 1
+!s100 6j6bjOX>U[6ogS[FF:^1a1
+R1
+IE[mW@A9R5o[BezOzKfW<A1
+R2
+R3
+w1773490947
+8D:/Verilog_code/tb_diff2_1b_opt.v
+FD:/Verilog_code/tb_diff2_1b_opt.v
+!i122 20
+L0 3 53
+R4
+r1
+!s85 0
+31
+R5
+!s107 D:/Verilog_code/tb_diff2_1b_opt.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/tb_diff2_1b_opt.v|
+!i113 1
+R6
+R7
+vtb_mash111_top
+R19
+!i10b 1
+!s100 mLm07nl5CQ`lVKE0BJak;2
+R1
+I:k3_2hn2Tg=ATV<_QQzVX0
+R2
+R3
+w1773746388
+8D:/Verilog_code/tb_mash111_top.v
+FD:/Verilog_code/tb_mash111_top.v
+!i122 113
+L0 3 239
+R4
+r1
+!s85 0
+31
+R20
+!s107 D:/Verilog_code/tb_mash111_top.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/tb_mash111_top.v|
+!i113 1
+R6
+R7
+vtb_mash_acc_ce
+R19
+!i10b 1
+!s100 2bClNi`^BT`03iN0Q43[W0
+R1
+IoYSPe@5@T1Xf^A^ofUCg;2
+R2
+R3
+w1773742944
+8D:/Verilog_code/tb_mash_acc_ce.v
+FD:/Verilog_code/tb_mash_acc_ce.v
+!i122 109
+L0 3 123
+R4
+r1
+!s85 0
+31
+R20
+!s107 D:/Verilog_code/tb_mash_acc_ce.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/tb_mash_acc_ce.v|
+!i113 1
+R6
+R7
+vtb_ncn_mash111_opt
+R0
+!i10b 1
+!s100 @?IOUbDm0C`?GZQdD`d>40
+R1
+IZLHmgd1bhhB8hVgoZ1O7W1
+R2
+R3
+w1773491039
+8D:/Verilog_code/tb_ncn_mash111_opt.v
+FD:/Verilog_code/tb_ncn_mash111_opt.v
+!i122 22
+R21
+R4
+r1
+!s85 0
+31
+R5
+!s107 D:/Verilog_code/tb_ncn_mash111_opt.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/tb_ncn_mash111_opt.v|
+!i113 1
+R6
+R7
+vtb_prototype
+R16
+!i10b 1
+!s100 ISfA96C];;K1j_XAG4C^S1
+R1
+IZE23QDN@]BQl1=J2[am:]3
+R2
+R3
+w1774081328
+8tb_prototype.v
+Ftb_prototype.v
+!i122 140
+L0 3 170
+R4
+r1
+!s85 0
+31
+R17
+Z22 !s107 tb_prototype.v|prototype.v|
+R18
+!i113 1
+R7
+vtb_prototype_func
+!s110 1774110420
+!i10b 1
+!s100 Y6WkA4:Fl9o^W@MdU`of;0
+R1
+IF20Plh5nU@dIYXLbAO[?a3
+R2
+R3
+w1774094530
+8D:/Verilog_code/tb_prototype_func.v
+FD:/Verilog_code/tb_prototype_func.v
+!i122 135
+L0 3 288
+R4
+r1
+!s85 0
+31
+!s108 1774110420.000000
+!s107 D:/Verilog_code/tb_prototype_func.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/tb_prototype_func.v|
+!i113 1
+R6
+R7
+vtb_prototype_protocol
+Z23 !s110 1774110421
+!i10b 1
+!s100 g4cI=DMHFhXha1DjdFzo42
+R1
+Il=^hi5WBFFzR0a;f2m1_@0
+R2
+R3
+w1774095890
+8D:/Verilog_code/tb_prototype_protocol.v
+FD:/Verilog_code/tb_prototype_protocol.v
+!i122 136
+L0 3 296
+R4
+r1
+!s85 0
+31
+Z24 !s108 1774110421.000000
+!s107 D:/Verilog_code/tb_prototype_protocol.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/tb_prototype_protocol.v|
+!i113 1
+R6
+R7
+vtb_prototype_stress
+R23
+!i10b 1
+!s100 h:z[3DJEk=LeHW4S]jRY^3
+R1
+IX[FNTlV[_P3Nl[NgR1HeQ3
+R2
+R3
+w1774095966
+8D:/Verilog_code/tb_prototype_stress.v
+FD:/Verilog_code/tb_prototype_stress.v
+!i122 137
+L0 3 264
+R4
+r1
+!s85 0
+31
+R24
+!s107 D:/Verilog_code/tb_prototype_stress.v|
+!s90 -reportprogress|300|-work|work|-stats=none|D:/Verilog_code/tb_prototype_stress.v|
+!i113 1
+R6
+R7
