@@ -1,0 +1,263 @@
+======================================================================
+CE BRANCH FREEZE SUMMARY
+Version: v1.0 single-stage branch freeze
+Scope  : hb_ce single-stage development, debugging, verification, and
+         current engineering conclusions
+Status : Frozen reference for later review
+======================================================================
+
+[1] Branch Objective
+This branch focused only on the single-stage compact half-band module
+used for the CE-based low-power later-stage prototype.
+
+Target goals:
+1. Build a compact half-band interpolation stage suitable for HB3/HB4/HB5
+2. Keep the architecture low-power oriented
+3. Make the implementation Verilog-2001 compatible
+4. Ensure the stage can be verified by an engineering-style self-checking TB
+5. Freeze one stable single-stage reference before expanding to chain-level work
+
+[2] Final Module Identity
+Frozen single-stage module name:
+    hb_ce
+
+This stage is the compact CE-driven polyphase-style half-band prototype.
+The current architecture keeps:
+- data-driven phase control
+- delay-line update only on accepted input samples
+- operand isolation on the even branch
+- compact CSD constant multipliers
+- odd-phase center-tap path
+- explicit output narrowing through narrow_out()
+
+Core behavior of the current stage:
+- fire_even = (phase == 0) && din_valid
+- fire_odd  = (phase == 1)
+
+So the stage accepts one real input sample on the even phase, then emits
+the corresponding odd-phase output on the next cycle. The current logic
+uses d0 as the odd-phase center-tap source. :contentReference[oaicite:0]{index=0}
+
+[3] Main Architecture Characteristics
+The frozen single-stage architecture is a compact 7-tap later-stage
+half-band form with the following conceptual structure:
+
+    h = [h0, 0, h2, center, h2, 0, h0]
+
+Implementation features:
+- one compact delay line (d0, d1, d2)
+- one even branch using symmetric pre-adders
+- one odd branch using the center-tap path
+- CSD-based constant multiplication
+- CE/data-driven phase scheduling
+- no handwritten gated clock
+- even-path operand isolation to reduce useless toggling
+
+This is intentionally different from the earlier heavier prototype with
+many more tap pairs and free-running phase behavior. The current branch
+moved toward a smaller, later-stage-specific low-power implementation. :contentReference[oaicite:1]{index=1}
+
+[4] Key Design Decisions Made in This Branch
+4.1 Phase control
+The phase is no longer free-running.
+It advances only according to valid data activity:
+- even phase accepts a real input sample
+- odd phase emits the paired output
+- idle periods do not cause meaningless internal progression
+
+4.2 Delay-line update
+The delay line is updated only when fire_even is asserted.
+This means:
+- no history corruption during idle periods
+- no unnecessary switching when no real sample is accepted
+
+4.3 Odd-phase definition
+For this frozen branch, odd-phase output is fixed to use d0.
+The implementation is internally self-consistent with this choice.
+The discussion about whether to call that sample x[n] or x[n-1] was
+resolved practically by freezing the implementation behavior and avoiding
+further logic changes at this stage. :contentReference[oaicite:2]{index=2}
+
+4.4 Even-path low-power isolation
+The even-path inputs x0_e, x1_e, x2_e, x3_e are forced to zero when
+fire_even is not active. This suppresses useless switching inside:
+- pair_outer / pair_inner
+- outer_prod / inner_prod
+- even_acc
+
+That behavior was confirmed again in the waveform review.
+
+4.5 Output narrowing
+The stage keeps the current round-half-up narrowing behavior through
+narrow_out(). This was intentionally not changed again in the frozen
+single-stage branch, in order to avoid destabilizing a version that had
+already passed the self-checking TB. :contentReference[oaicite:3]{index=3}
+
+[5] Important Issues Encountered During This Branch
+5.1 Earlier structure mismatch
+Earlier versions were too heavy for the intended HB3/HB4/HB5 role:
+- too many symmetric pairs
+- free-running phase
+- dout_valid behavior not suitable for current stage-level protocol
+- odd/even branches not aligned with the intended low-power style
+
+These were progressively reduced into the compact hb_ce form.
+
+5.2 Function re-entrancy / strict EDA tool issue
+A major compile issue appeared in strict simulators / compilers because
+Verilog functions are static by default, and concurrent calls to the same
+non-automatic function may be rejected by certain tools.
+
+The affected functions included:
+- csd_term
+- narrow_out
+
+This was treated as a tool-compatibility / language-semantic issue rather
+than a fundamental logic error in the filter structure itself.
+
+5.3 Comment / implementation ambiguity
+At one point, comments describing the odd-phase sample origin did not
+perfectly match the actual registered signal used by the RTL.
+This was resolved by freezing the implementation and then producing a
+comment-clean version so the documentation would no longer contradict
+the code behavior.
+
+[6] Verification Process
+The branch used a self-checking single-stage testbench rather than only
+manual waveform inspection.
+
+Verification strategy:
+1. Instantiate hb_ce alone
+2. Drive real input samples with din_valid pulses
+3. Maintain an internal reference model in the testbench
+4. Compare DUT outputs against expected outputs
+5. Perform an odd-phase reverse-input check
+6. Stop the simulation after all expected outputs are checked
+
+The self-checking TB passed successfully with:
+    [PASS][hb_ce] checked_outputs=16
+
+This is the most important single-stage verification milestone in this
+branch.
+
+[7] Why the Single-Stage TB Result Matters
+The PASS result means that, under the frozen branch assumptions,
+the following items were all consistent:
+- phase scheduling
+- accepted-input timing
+- delay-line update order
+- even/odd output sequencing
+- odd-phase center-path behavior
+- output narrowing behavior
+- DUT vs reference-model agreement
+
+This does not yet prove the entire multi-stage chain, but it does prove
+that the basic single-stage cell is already in a stable, reviewable state.
+
+[8] Waveform-Based Engineering Review
+After the TB passed, the waveform was reviewed manually in detail.
+
+Observed conclusions:
+8.1 Phase behavior
+The phase did not free-run. It advanced according to real activity and
+returned to idle properly.
+
+8.2 Valid behavior
+dout_valid was not constantly asserted by mistake. In the steady pattern
+used by the TB, it remained active in the expected even/odd output rhythm.
+
+8.3 Delay-line correctness
+d0, d1, d2 shifted in the expected order and preserved the accepted input
+history correctly.
+
+8.4 Odd-phase correctness
+Odd-phase outputs matched the expected 0.5-scaled behavior:
+- 1024 -> 512
+- 200  -> 100
+- -400 -> -200
+- 600  -> 300
+- -800 -> -400
+- 1000 -> 500
+
+This strongly confirmed the current odd-path implementation.
+
+8.5 Even-path correctness
+Even-path outputs were not simple copies of the input. They behaved like
+real interpolation-filter outputs, which indicates that the FIR branch was
+active and not accidentally bypassed.
+
+8.6 Operand isolation effectiveness
+The second waveform review showed that the internal even-path signals were
+quiet outside the active even-computation windows. This is an important
+low-power property and was considered a strong positive result.
+
+[9] Current Frozen Interpretation of the Stage
+The stage can now be treated as:
+
+    A validated, compact, CE-driven, low-power-oriented
+    single-stage reference block for later-stage HB work
+
+This means:
+- do not casually change the core logic now
+- use this version as the baseline for later integration
+- further work should move outward to top-level use, not back into
+  endless single-stage rewrites
+
+[10] Known Limitations That Are Accepted in This Freeze
+This freeze accepts the following as current branch conditions:
+1. odd-phase is fixed to d0
+2. narrow_out() keeps the current round-half-up behavior
+3. the stage is validated at single-stage level only
+4. chain-level confirmation is still a separate task
+5. coefficient approximation is still based on the current compact
+   prototype/CSD representation, not yet on a final "publication-grade"
+   coefficient re-derivation
+
+These are accepted branch boundaries, not open bugs.
+
+[11] What Was Explicitly Not Done in This Branch
+To keep the branch stable, the following were intentionally not pursued
+further once the single-stage reference passed:
+- further rewriting of the phase state machine
+- changing odd-phase source from d0 to another historical sample
+- rewriting round-half-up into a more expensive symmetric rounding scheme
+- expanding immediately to full HB345 chain debugging before freezing the
+  single stage
+- restarting coefficient architecture discussion from scratch
+
+This was a deliberate engineering decision to preserve a passing baseline.
+
+[12] Final Branch Conclusion
+This CE branch successfully converged to a stable single-stage reference.
+The final hb_ce stage:
+- compiles
+- passes the self-checking single-stage TB
+- matches its reference model
+- shows correct even/odd sequencing
+- shows correct delay-line behavior
+- shows correct odd-phase half-scaling behavior
+- shows quiet even-path behavior outside active windows
+- is suitable to be frozen as the current single-stage reference block
+
+[13] Recommended Meaning of This Freeze for Future Work
+From this point onward, the branch should be interpreted as follows:
+
+Single-stage hb_ce status:
+- functionally validated
+- waveform reviewed
+- low-power behavior partially confirmed at RTL level
+- suitable for use as the building block in later HB3/HB4/HB5 work
+
+Any future failure found at chain level should first be treated as:
+- integration issue
+- interface issue
+- stage-to-stage timing/valid issue
+- width propagation issue
+
+It should NOT automatically be assumed that the single-stage hb_ce logic
+is wrong, because this branch already established a passed single-stage
+reference.
+
+======================================================================
+END OF CE BRANCH FREEZE SUMMARY
+======================================================================

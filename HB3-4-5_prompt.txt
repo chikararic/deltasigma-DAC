@@ -1,0 +1,269 @@
+可以。
+下面我直接给你一版**适合拿去继续生成 Verilog/让代码模型执行**的 **HB3/HB4/HB5 统一架构引导词 Prompt**。
+目标是：**同一套 RTL 架构，参数化适配 HB3/HB4/HB5，突出 low-power、易验证、易级联。**
+
+---
+
+# Prompt（中文版，工程约束明确版）
+
+请为一个 **5-stage half-band interpolation chain** 中的 **HB3 / HB4 / HB5** 设计统一的 **Verilog RTL 模块架构**。
+这三个 stage 采用相同的基本硬件结构，仅允许通过 **系数参数** 和必要的 **位宽参数** 区分。设计目标是：**低功耗、易综合、易验证、便于后续级联到 MASH111 前端**。
+
+## 设计背景
+
+* 系统为多级 2× half-band FIR 插值器。
+* 当前只针对后三级：**HB3, HB4, HB5**。
+* 这三级均为 **7-tap half-band FIR**，结构短小，适合采用统一模板。
+* 系数为实数常数，后续实现采用 **CSD / shift-add multiplierless** 方法。
+* 目标不是重新设计滤波器，而是基于现有系数实现一个 **统一、低功耗、工程化 RTL 结构**。
+
+## 必须采用的结构约束
+
+### 1. Half-band 对称结构
+
+滤波器形式固定为：
+
+[
+[-a,\ 0,\ b,\ 0.5,\ b,\ 0,\ -a]
+]
+
+必须利用：
+
+* **线性相位对称性**
+* **half-band 零系数**
+* **中心 tap = 0.5 可由右移实现**
+
+禁止写成 7 个独立乘法器直接求和的低效结构。
+
+### 2. Polyphase / even-odd 架构思想
+
+请使用 **polyphase-oriented** 的工程表达方式组织代码。
+允许采用“even path / odd path”思想来解释架构，但最终输出必须是**一个稳定、清晰、可综合的 Verilog 实现**。
+重点是：
+
+* 利用 half-band 特性减少有效计算
+* 体现偶相/奇相的数据路径划分思想
+* 保持代码结构清晰，不做过度复杂的控制器
+
+### 3. CSD / multiplierless realization
+
+所有非平凡系数乘法必须转化为：
+
+* shift
+* add / subtract
+
+不得使用 `*` 乘法运算符实现常数乘法。
+中心系数 `0.5` 必须用算术右移 1 位实现。
+请优先生成**适合后续替换不同 CSD 系数表达式**的结构化写法。
+
+### 4. CE 低功耗策略
+
+必须加入 **clock enable (CE)**，但严格遵守以下规则：
+
+* **只给状态寄存器 / 延迟线 / 输出寄存器加 CE**
+* **不引入手写 gated clock**
+* 当输入无有效更新时，寄存器保持原值，减少翻转活动
+* 组合逻辑尽量保持简单，不引入复杂时钟门控网络
+* CE 作为模块输入信号之一，例如 `ce`
+
+### 5. 模块设计要求
+
+请设计为一个可参数化复用的统一模块，例如：
+
+* `hb_stage_lite`
+* 或类似名称
+
+并满足：
+
+* 适用于 HB3 / HB4 / HB5
+* 可通过参数配置系数 shift-add 形式
+* 输入输出接口统一，便于级联
+* 代码尽量简洁，但保持工程可读性
+* 输出必须是 **Verilog**，不是 VHDL，不是 SystemVerilog 特性过重的写法
+
+## 推荐实现方式
+
+请优先考虑以下数据流：
+
+1. 延迟线保存最近 7 个采样
+2. 做对称预加：
+
+   * (s_1 = x[n] + x[n-6])
+   * (s_2 = x[n-2] + x[n-4])
+3. 分别实现：
+
+   * (-a \cdot s_1)
+   * (b \cdot s_2)
+   * (0.5 \cdot x[n-3])
+4. 最后求和得到输出
+
+如果采用 polyphase 解释，也要保证最终 RTL 仍然清晰反映这个等效求和流程。
+
+## 位宽与工程要求
+
+请显式考虑以下问题：
+
+* 输入位宽、内部预加位宽、shift-add 中间位宽、输出位宽
+* 有符号数处理
+* 截断或保留策略
+* 避免不必要的溢出
+* 代码中添加详细注释，解释每一步的功能与低功耗意图
+
+## 输出内容要求
+
+请输出以下内容：
+
+1. **模块功能说明**
+2. **架构说明**
+3. **Verilog RTL 完整代码**
+4. **代码内详细注释**
+5. 说明该架构为什么适合 HB3/HB4/HB5，而不需要像 HB1/HB2 那样使用更复杂的优化器
+6. 明确指出该实现如何体现：
+
+   * half-band symmetry
+   * polyphase/even-odd idea
+   * CSD multiplierless mapping
+   * CE-based low-power strategy
+
+---
+
+# Prompt（英文版，适合直接喂代码模型）
+
+Design a **unified Verilog RTL architecture** for **HB3 / HB4 / HB5** in a **5-stage half-band interpolation chain**.
+These three stages should share the same hardware template, with differences only in **constant coefficients** and, if needed, minor width parameters. The design target is **low power, synthesizability, structural clarity, and easy cascading toward the MASH111 front-end**.
+
+## Background
+
+* The system is a multistage 2× half-band FIR interpolation chain.
+* Only the last three stages are considered here: **HB3, HB4, HB5**.
+* Each of them is a **7-tap half-band FIR**, so a single reusable architecture is preferred.
+* Coefficients are real constants and should be implemented using **CSD / shift-add multiplierless realization**.
+* The goal is not to redesign the filter, but to implement the existing stages in a **hardware-efficient and low-power RTL form**.
+
+## Mandatory architectural constraints
+
+### 1. Exploit half-band symmetry
+
+The filter structure is fixed as:
+
+[
+[-a,\ 0,\ b,\ 0.5,\ b,\ 0,\ -a]
+]
+
+You must exploit:
+
+* **linear-phase symmetry**
+* **half-band zero-valued taps**
+* **the center tap = 0.5**, implemented as arithmetic right shift by 1
+
+Do **not** implement the filter as seven independent multipliers summed together.
+
+### 2. Polyphase / even-odd oriented organization
+
+Use a **polyphase-oriented engineering interpretation** of the architecture.
+You may explain the design using **even-path / odd-path** terminology, but the final result must still be a **clean, synthesizable, stable Verilog RTL implementation**.
+
+The key point is to:
+
+* exploit half-band properties to reduce computation
+* reflect the even/odd path decomposition idea
+* avoid overcomplicated control logic
+
+### 3. CSD / multiplierless realization
+
+All nontrivial constant multiplications must be implemented using:
+
+* shifts
+* add/subtract operations
+
+Do **not** use the `*` operator for constant multiplications.
+The center coefficient `0.5` must be implemented by arithmetic right shift by 1.
+The coding style should make it easy to later substitute specific CSD coefficient forms.
+
+### 4. CE-based low-power strategy
+
+The module must support **clock enable (CE)**, with the following strict rules:
+
+* **Apply CE only to state registers / delay-line registers / output registers**
+* **Do not introduce any hand-written gated clock**
+* When the input is not valid, registers must hold their values to reduce switching activity
+* Keep combinational logic simple; do not build complex clock-gating structures
+* CE should be a normal input port such as `ce`
+
+### 5. Module style
+
+Create a reusable module such as:
+
+* `hb_stage_lite`
+
+Requirements:
+
+* reusable for HB3 / HB4 / HB5
+* configurable by coefficient-specific shift-add expressions
+* uniform interface for cascading
+* concise but engineering-readable code
+* plain **Verilog RTL**, not VHDL, and avoid unnecessarily heavy SystemVerilog constructs
+
+## Preferred dataflow
+
+Please structure the design around the following flow:
+
+1. A delay line stores the latest 7 samples
+2. Symmetric pre-adders:
+
+   * (s_1 = x[n] + x[n-6])
+   * (s_2 = x[n-2] + x[n-4])
+3. Implement:
+
+   * (-a \cdot s_1)
+   * (b \cdot s_2)
+   * (0.5 \cdot x[n-3])
+4. Sum them to generate the output
+
+If you use a polyphase interpretation, the final RTL must still clearly reflect this equivalent computation.
+
+## Bit-width and implementation requirements
+
+Explicitly consider:
+
+* input width
+* internal pre-adder width
+* shift-add intermediate widths
+* output width
+* signed arithmetic
+* truncation / preservation policy
+* avoiding unnecessary overflow
+
+Add detailed comments explaining:
+
+* what each block does
+* why the structure is low power
+* how CE is used safely without gated clocks
+
+## Required output
+
+Please provide:
+
+1. functional description
+2. architecture explanation
+3. complete Verilog RTL code
+4. detailed inline comments
+5. an explanation of why this architecture is suitable for HB3/HB4/HB5 and does not require the more aggressive optimization flow used for HB1/HB2
+6. a clear explanation of how the implementation reflects:
+
+   * half-band symmetry
+   * polyphase / even-odd idea
+   * CSD multiplierless mapping
+   * CE-based low-power strategy
+
+---
+
+# 更短的精简版 Prompt
+
+如果你想直接给代码模型一条更短的命令，用这一版：
+
+请为 HB3/HB4/HB5 生成一个统一的 Verilog RTL 模块 `hb_stage_lite`。这三个 stage 都是 7-tap half-band FIR，结构为 `[-a, 0, b, 0.5, b, 0, -a]`。要求利用 half-band 零系数和线性相位对称性，使用 polyphase/even-odd 思想组织数据路径，并将常数乘法全部实现为 CSD 风格的 shift-add 网络，禁止使用 `*`。中心 tap `0.5` 用算术右移 1 位实现。模块必须支持 `ce` 时钟使能，但只能对状态寄存器、延迟线寄存器和输出寄存器使用 CE；禁止手写 gated clock。当输入无有效更新时，寄存器保持原值以减少翻转活动。请显式考虑 signed arithmetic、位宽扩展、预加器、中间结果和输出位宽，并给出详细注释，说明该架构如何体现 half-band symmetry、polyphase idea、multiplierless CSD mapping 和 CE-based low-power strategy。输出完整 Verilog 代码和架构说明。
+
+---
+
+如果你要，我下一条可以继续把这个 prompt 再改成 **更适合 Codex 的“硬约束版本”**，让它更少跑偏。

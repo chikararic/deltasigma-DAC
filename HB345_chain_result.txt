@@ -1,0 +1,475 @@
+======================================================================
+HB345_FREEZE_RECORD_V1_0
+Project      : Later-stage HB interpolation chain (HB3/HB4/HB5)
+Status       : Frozen functional baseline for urgent submission
+RTL Style    : Verilog-2001
+Date         : 2026-03-31
+======================================================================
+
+[1] FREEZE SCOPE
+This freeze record covers:
+1. The shared later-stage half-band stage module: hb_ce
+2. The 3-stage chain top module: hb345
+3. The chain-level self-checking testbench: tb_hb345_chain_v1_0
+4. The current frozen numerical assumptions, interface widths, and validation basis
+
+This freeze does NOT include:
+- HB1 / HB2 final RTL freeze
+- MASH111 internal redesign
+- MATLAB coefficient re-optimization after the current compact prototype
+- Post-synthesis timing / power report
+- Layout / backend implementation
+
+----------------------------------------------------------------------
+[2] CURRENT FILE / MODULE MAPPING
+----------------------------------------------------------------------
+
+Frozen module/file naming convention:
+- File      : hb_ce.v
+  Module    : hb_ce
+
+- File      : hb345.v
+  Module    : hb345
+
+- File      : tb_hb345_chain_v1_0.v
+  Module    : tb_hb345_chain_v1_0
+
+Engineering note:
+The top chain file name in the current project is hb345.v.
+Do not use the old compile command with hb345_chain_v1_0.v unless a file
+with that exact name actually exists in the project directory.
+
+----------------------------------------------------------------------
+[3] SYSTEM POSITIONING
+----------------------------------------------------------------------
+
+Overall digital chain (current working scope):
+HB2 -> HB3 -> HB4 -> HB5 -> MASH111
+
+Frozen later-stage width chain:
+HB2 out -> HB3 -> HB4 -> HB5 -> MASH111 in
+16 bit    16 bit  15 bit  14 bit  14 bit
+
+Meaning:
+- HB3 input  = 16-bit signed
+- HB3 output = 16-bit signed
+- HB4 input  = 16-bit signed
+- HB4 output = 15-bit signed
+- HB5 input  = 15-bit signed
+- HB5 output = 14-bit signed
+- MASH111 input is frozen at 14-bit signed
+
+This later-stage freeze is consistent with the previously agreed chain-level
+boundary plan:
+14 -> 15 -> 16 -> 16 -> 15 -> 14 -> 14
+where HB3/HB4/HB5 correspond to the last three stages:
+16 -> 16 -> 15 -> 14 -> 14
+
+----------------------------------------------------------------------
+[4] SHARED LATER-STAGE FILTER PROTOTYPE
+----------------------------------------------------------------------
+
+Frozen compact later-stage half-band prototype:
+h = [h0, 0, h2, center, h2, 0, h0]
+
+Current prototype interpretation:
+- 7 taps total
+- 2 non-zero symmetric coefficient pairs
+- 1 center tap
+- suitable for HB3 / HB4 / HB5 shared compact architecture
+
+Historical floating-point prototype reference:
+h0     ≈ -0.0318849
+h2     ≈ +0.2818764
+center = 0.5
+
+Frozen current CSD approximation:
+Outer coefficient h0:
+- h0 ≈ -(2^-5 + 2^-10)
+- O_SGN0 = -1
+- O_SH0  = 5
+- O_SGN1 = -1
+- O_SH1  = 10
+- O_SGN2 =  0
+- O_SH2  = 0
+
+Inner coefficient h2:
+- h2 ≈ +(2^-2 + 2^-5 + 2^-10)
+- I_SGN0 =  1
+- I_SH0  = 2
+- I_SGN1 =  1
+- I_SH1  = 5
+- I_SGN2 =  1
+- I_SH2  = 10
+
+Center tap:
+- center = 2^-1 = 0.5
+- CENTER_SHIFT = 1
+
+Important:
+These are the CURRENT frozen prototype coefficients for RTL validation.
+They are acceptable as a low-power compact baseline.
+If later MATLAB refinement changes the exact coefficient values, that should be
+treated as a future coefficient update, not as a change to the current frozen
+architecture.
+
+----------------------------------------------------------------------
+[5] HB_CE MODULE FREEZE
+----------------------------------------------------------------------
+
+Frozen shared stage module:
+module hb_ce
+
+Current frozen parameter set in the generic module:
+- IN_W         = configurable
+- OUT_W        = configurable
+- ACC_W        = 32
+- FRAC_W       = 14
+- CENTER_SHIFT = 1
+- USE_SAT      = configurable (default 0 for lower power, HB5 uses 1)
+
+Frozen interface:
+input  clk
+input  rst_n
+input  din_valid
+input  signed [IN_W-1:0] din
+output reg signed [OUT_W-1:0] dout
+output reg dout_valid
+
+Frozen core structure:
+1. Data-driven phase control
+2. Delay-line update only when a real input sample is accepted
+3. Operand isolation on the even-phase path
+4. Two symmetric pre-adders
+5. Two CSD constant-multiplication paths
+6. One odd-phase center-tap path
+7. Unified output narrowing function
+
+----------------------------------------------------------------------
+[6] PHASE / VALID FREEZE
+----------------------------------------------------------------------
+
+Frozen control logic:
+- fire_even = (phase == 0) && din_valid
+- fire_odd  = (phase == 1)
+
+Frozen phase behavior:
+- phase is NOT free-running
+- phase toggles only when useful output work exists
+- phase sequence is:
+  wait for valid input -> even output -> odd output -> wait for next input
+
+Engineering meaning:
+Each accepted real input sample produces two output events:
+1. even-phase output
+2. odd-phase output
+
+This is the frozen polyphase/time-multiplexed operating principle of hb_ce.
+
+----------------------------------------------------------------------
+[7] DELAY-LINE FREEZE
+----------------------------------------------------------------------
+
+Frozen original-rate history registers inside hb_ce:
+- d0
+- d1
+- d2
+
+Frozen update rule:
+on fire_even:
+    d2 <= d1
+    d1 <= d0
+    d0 <= din
+
+Frozen interpretation:
+- d0 is the most recently accepted and registered input sample
+- d1 and d2 are the two older samples
+
+Frozen odd-phase convention:
+- odd phase uses d0
+- this convention is now fixed for the current baseline
+- do not re-open the d0 vs d1 debate in this urgent freeze round
+
+----------------------------------------------------------------------
+[8] EVEN / ODD PHASE DEFINITIONS
+----------------------------------------------------------------------
+
+Frozen even-phase expression:
+y_even = h0 * (current input + third historical sample)
+       + h2 * (first historical sample + second historical sample)
+
+Operationally in the RTL:
+- x0_e = current input sample
+- x1_e = d0
+- x2_e = d1
+- x3_e = d2
+
+Frozen odd-phase expression:
+y_odd = center * d0
+
+Important note:
+In this frozen baseline, odd phase is explicitly described using d0,
+not x[n] / x[n-1] symbolic indexing, to avoid ambiguity from update timing.
+
+----------------------------------------------------------------------
+[9] INTERNAL FIXED-POINT POLICY
+----------------------------------------------------------------------
+
+Frozen internal fixed-point strategy:
+- Internal arithmetic enters a FRAC_W fractional domain
+- pair_outer_ext and pair_inner_ext are sign-extended to ACC_W
+- then shifted left by FRAC_W before CSD multiplication
+- CSD multiplication is implemented by arithmetic right shifts and signed sums
+
+Frozen numeric parameters:
+- ACC_W  = 32
+- FRAC_W = 14
+
+Engineering implication:
+- Internal working precision is intentionally much wider than stage output width
+- This preserves arithmetic stability before final narrowing
+- Output narrowing is applied only at the stage boundary
+
+----------------------------------------------------------------------
+[10] OUTPUT NARROWING POLICY
+----------------------------------------------------------------------
+
+Frozen narrowing function behavior:
+- round-half-up style rounding
+- optional saturation
+- final truncation to OUT_W
+
+Current frozen choice:
+- KEEP current round-half-up implementation
+- DO NOT introduce a new rounding policy during this urgent freeze
+- The existing implementation is acceptable for the present baseline
+
+Frozen stage-specific USE_SAT policy:
+- HB3: USE_SAT = 0
+- HB4: USE_SAT = 0
+- HB5: USE_SAT = 1
+
+Rationale:
+- HB3 / HB4: lower switching and simpler logic
+- HB5: safest final boundary before 14-bit MASH111 input
+
+----------------------------------------------------------------------
+[11] LOW-POWER FREEZE
+----------------------------------------------------------------------
+
+Current later-stage low-power strategy is frozen as:
+
+1. CE/valid-driven phase progression
+   - no free-running internal activity
+
+2. Delay-line update only on real input acceptance
+   - no unnecessary history-register shifting in idle cycles
+
+3. Operand isolation in even-phase datapath
+   - when not computing the even path, its operands are forced to zero
+   - this reduces useless toggling and glitch propagation
+
+4. Shared compact 7-tap structure for HB3/HB4/HB5
+   - later stages do not use a heavy 6-pair HB1-like template
+
+5. No handwritten gated clock
+   - keep RTL synthesis-friendly
+   - rely on CE/valid discipline rather than risky manual clock gating
+
+This is the core low-power architectural claim of the current later-stage RTL.
+
+----------------------------------------------------------------------
+[12] HB345 TOP-LEVEL FREEZE
+----------------------------------------------------------------------
+
+Frozen chain top module:
+module hb345
+
+Frozen instantiation plan:
+- u_hb3 : hb_ce
+    IN_W         = 16
+    OUT_W        = 16
+    ACC_W        = 32
+    FRAC_W       = 14
+    CENTER_SHIFT = 1
+    USE_SAT      = 0
+
+- u_hb4 : hb_ce
+    IN_W         = 16
+    OUT_W        = 15
+    ACC_W        = 32
+    FRAC_W       = 14
+    CENTER_SHIFT = 1
+    USE_SAT      = 0
+
+- u_hb5 : hb_ce
+    IN_W         = 15
+    OUT_W        = 14
+    ACC_W        = 32
+    FRAC_W       = 14
+    CENTER_SHIFT = 1
+    USE_SAT      = 1
+
+Shared coefficient parameters are identical across HB3/HB4/HB5 in the current
+prototype baseline.
+
+----------------------------------------------------------------------
+[13] TESTBENCH FREEZE
+----------------------------------------------------------------------
+
+Frozen chain-level testbench:
+module tb_hb345_chain_v1_0
+
+Frozen DUT under test:
+hb345 dut (...);
+
+Frozen stimulus pattern:
+- one-cycle valid pulse
+- one-cycle empty cycle
+- input sequence:
+  256
+  -512
+  768
+  -1024
+  512
+  0
+
+Frozen checker method:
+1. Build a reference model for HB3 / HB4 / HB5
+2. Step the reference model on every clock
+3. Compare DUT and reference at each stage
+
+Important checker correction already applied:
+- compare VALID first
+- compare DATA only when VALID == 1
+- do NOT compare data in idle cycles
+  because the DUT legitimately holds the previous registered output value
+
+This fix removed the previous false errors seen on HB4/HB5 idle cycles.
+
+----------------------------------------------------------------------
+[14] CURRENT VALIDATION STATUS
+----------------------------------------------------------------------
+
+Current chain-level validation result:
+- tb_hb345_chain_v1_0 PASS
+- cycles_checked = 52
+
+Meaning:
+- HB3 vs reference: pass
+- HB4 vs reference: pass
+- HB5 vs reference: pass
+
+Observed engineering conclusion:
+- the current hb345 chain is functionally consistent with the frozen reference model
+- the phase/valid handshake is self-consistent
+- the later-stage chain can now be treated as a validated functional baseline
+
+----------------------------------------------------------------------
+[15] MODELSIM / QUESTA RUN COMMANDS
+----------------------------------------------------------------------
+
+Recommended compile/run commands:
+
+vdel -lib work -all
+vlib work
+vmap work work
+vlog -work work hb_ce.v hb345.v tb_hb345_chain_v1_0.v
+vsim work.tb_hb345_chain_v1_0
+run -all
+
+Important:
+Use hb345.v as the current top-chain file name in the project,
+not hb345_chain_v1_0.v, unless such a file is actually present.
+
+----------------------------------------------------------------------
+[16] WHAT IS FROZEN NOW
+----------------------------------------------------------------------
+
+The following items are now frozen for the current urgent submission baseline:
+
+A. Later-stage chain topology
+- HB3 / HB4 / HB5 shared compact architecture
+
+B. Module naming
+- hb_ce
+- hb345
+- tb_hb345_chain_v1_0
+
+C. Width chain
+- HB3: 16 -> 16
+- HB4: 16 -> 15
+- HB5: 15 -> 14
+- MASH111 input = 14
+
+D. Fixed-point parameters
+- ACC_W  = 32
+- FRAC_W = 14
+- CENTER_SHIFT = 1
+
+E. Coefficient approximation
+- h0 ≈ -(2^-5 + 2^-10)
+- h2 ≈ +(2^-2 + 2^-5 + 2^-10)
+- center = 0.5
+
+F. odd-phase convention
+- use d0
+
+G. checker methodology
+- valid-first compare
+- data compare only on valid cycles
+
+H. current functional status
+- chain-level TB PASS
+
+----------------------------------------------------------------------
+[17] WHAT SHOULD NOT BE CHANGED TONIGHT
+----------------------------------------------------------------------
+
+Do NOT casually change the following now:
+- hb_ce arithmetic structure
+- d0-based odd-phase choice
+- FRAC_W = 14
+- ACC_W = 32
+- HB3/HB4/HB5 width plan
+- shared prototype coefficient mapping
+- chain-level checker semantics
+- module names / file names again
+
+Any further changes now would invalidate the just-passed reference alignment.
+
+----------------------------------------------------------------------
+[18] NEXT ENGINEERING STEP AFTER FREEZE
+----------------------------------------------------------------------
+
+After this freeze, the recommended next steps are:
+
+1. Keep this version as the frozen baseline
+2. Archive the PASS log and waveform screenshots
+3. Reuse hb_ce for any incremental coefficient or power study
+4. Connect HB5 14-bit output to the already frozen 14-bit MASH111 input
+5. Only after that, decide whether to:
+   - refine coefficients
+   - reduce ACC_W
+   - modify rounding
+   - perform synthesis/power estimation
+
+----------------------------------------------------------------------
+[19] ONE-PARAGRAPH FREEZE SUMMARY
+----------------------------------------------------------------------
+
+The current later-stage digital interpolation baseline is frozen as a shared
+compact 7-tap half-band architecture for HB3/HB4/HB5, implemented by the
+Verilog-2001 module hb_ce and instantiated in the top-level module hb345.
+The chain uses a frozen width schedule of 16->16, 16->15, and 15->14 before the
+already frozen 14-bit MASH111 input. Internally, the module uses ACC_W=32,
+FRAC_W=14, CENTER_SHIFT=1, a data-driven even/odd phase controller, operand
+isolation for the even branch, CSD-based constant multiplication, and an
+odd-phase center-tap path fixed to d0. The chain-level self-checking testbench
+tb_hb345_chain_v1_0 has passed after correcting the checker to compare data only
+on valid cycles, so this version should be treated as the current functional
+freeze baseline for submission.
+
+======================================================================
+END OF HB345_FREEZE_RECORD_V1_0
+======================================================================
